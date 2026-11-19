@@ -1,4 +1,4 @@
-^tidydb\.Rproj$
+^hydromet\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^data-raw$
@@ -11,3 +11,5 @@
 ^inst$
 ^AGENTS\.md$
 ^docs$
+^_check$
+^.*\.tar\.gz$

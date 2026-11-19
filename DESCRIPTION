@@ -1,16 +1,23 @@
-Package: rpkg.template
-Title: What the Package Does (One Line, Title Case)
-Version: 0.1.0.9000
+Package: hydromet
+Title: Hydrometeorological Tools for Seasonal Adjustment, Breakpoint Regression and Geostrophic Wind
+Version: 0.1.0
 Authors@R: c(
-  person("Dongdong", "Kong", role = c("aut", "cre"), 
-         email = "kongdd.sysu@gmail.com", comment = c(ORCID = "0000-0003-1836-8172")))
-Description: What the package does (one paragraph).
+    person("Yuyang", "Duan", role = c("aut", "cre"),
+           email = "1176414487@qq.com"))
+Description: Provides hydrological and meteorological utilities: removal of the
+    seasonal cycle with month-day climatology (RemoveSeasonal), piecewise
+    regression with a common slope and segment-specific intercepts
+    (LS_OneBreak, LS_MultiBreaks), and geostrophic wind computed from
+    horizontal pressure gradients (CoriolisParameter, GeostrophicWind,
+    WindSpeed, WindDirection).
 License: MIT + file LICENSE
+URL: https://github.com/kavel-2026/hydromet
+BugReports: https://github.com/kavel-2026/hydromet/issues
 Imports:
     magrittr
-Suggests: 
+Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1

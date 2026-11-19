@@ -4,3 +4,8 @@
 
 */temp
 */*/temp
+
+# R CMD check 与构建产物
+_check/
+*.tar.gz
+docs/preview-*
