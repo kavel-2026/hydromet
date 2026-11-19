@@ -190,7 +190,7 @@ DONE
   [`R-CMD-check`], [windows-latest], [完整 `R CMD check`], [通过],
   [`R-CMD-check`], [ubuntu-latest], [完整 `R CMD check`], [通过],
   [`test-coverage`], [ubuntu-latest], [covr 覆盖率，上传 Codecov], [通过],
-  [`pkgdown`], [ubuntu-latest], [构建并部署包文档网站], [依赖编译中],
+  [`pkgdown`], [ubuntu-latest], [构建并部署包文档网站], [未完成],
 )
 
 = 5 操作步骤
@@ -239,8 +239,9 @@ DONE
 
 推送后 2–3 分钟即可在 Actions 页面看到结果。2026-11-19 22:53 的推送中，
 `R-CMD-check` 用时 1.9 分钟（windows-latest 与 ubuntu-latest 均通过）、
-`test-coverage` 用时 2.2 分钟并通过；`pkgdown` 需现场编译 ragg、textshaping 等依赖，
-耗时明显更长。运行记录见
+`test-coverage` 用时 2.2 分钟并通过；`pkgdown` 需要现场编译 ragg、textshaping 等依赖，
+本次运行 1 小时仍未完成，已取消，并把该工作流改为手动触发，避免每次推送都长时间占用 runner。
+运行记录见
 #link("https://github.com/kavel-2026/hydromet/actions")[仓库的 Actions 页面]。
 
 = 6 存在的问题与处理

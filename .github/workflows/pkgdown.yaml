@@ -1,10 +1,8 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+  # pkgdown 需要现场编译 ragg、textshaping 等依赖，在 runner 上耗时很长，
+  # 改由手动触发（Actions 页面 Run workflow）或发布 Release 时运行。
   release:
     types: [published]
   workflow_dispatch:
