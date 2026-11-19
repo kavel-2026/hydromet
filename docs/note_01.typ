@@ -63,7 +63,7 @@ $ u_g = -1/(rho f) (partial p)/(partial y) $ <eq_u>
 
 == 2.4 矢量形式
 
-把式 #[@eq_u]、#[@eq_v] 写成矢量形式：
+把式 #[@eq_v]、#[@eq_u] 写成矢量形式：
 
 $ bold(V)_g = 1/(rho f) bold(k) times nabla p $ <eq_vec>
 
@@ -74,7 +74,7 @@ $ bold(V)_g = 1/(rho f) bold(k) times nabla p $ <eq_vec>
 
 == 3.1 平衡关系的检验
 
-把式 #[@eq_u]、#[@eq_v] 代回式 #[@eq_balance]，有
+把式 #[@eq_v]、#[@eq_u] 代回式 #[@eq_balance]，有
 
 $ -f v_g = -1/rho (partial p)/(partial x), quad f u_g = -1/rho (partial p)/(partial y) $
 
@@ -128,22 +128,22 @@ R 包按“函数与脚本分离”的原则组织，模板来自
   [`WindDirection(u, v)`], [计算气象风向（风的来向，0–360°）],
 )
 
-```r
-CoriolisParameter <- function(lat, omega = 7.292115e-5) {
-  2 * omega * sin(lat * pi / 180)
-}
+#block(breakable: false)[
+  ```r
+  GeostrophicWind <- function(dpdx, dpdy, f, rho = 1.2) {
+    data.frame(
+      u = -dpdy / (rho * f),
+      v =  dpdx / (rho * f)
+    )
+  }
+  ```
+]
 
-GeostrophicWind <- function(dpdx, dpdy, f, rho = 1.2) {
-  data.frame(
-    u = -dpdy / (rho * f),
-    v =  dpdx / (rho * f)
-  )
-}
-```
+#pagebreak()
 
 == 4.3 数值例子
 
-取 45°N、空气密度 $rho = 1.2 "kg/m"^3$、纬向气压梯度 1 hPa / 100 km（即 $10^(-3) "Pa/m"$）：
+取 45°N、空气密度 $rho = 1.2 "kg/m"^3$、纬向气压梯度 $10^(-3) "Pa/m"$（即 1 hPa/100 km）：
 
 ```r
 f <- CoriolisParameter(45)          # 1.031e-04 s^-1
@@ -156,7 +156,7 @@ GeostrophicWind(dpdx = 1e-3, dpdy = 0, f = f)
 ```
 
 即地转风为 8.08 m/s 的南风（$v > 0$，风向北吹，风向 180°）。
-若改为经向气压梯度 $1 "hPa" / 100 "km"$、纬向梯度为零，则 $u = -8.08$ m/s，
+若改为经向气压梯度 $10^(-3) "Pa/m"$、纬向梯度为零，则 $u = -8.08$ m/s，
 为西风（风向 270°）。可见北半球地转风相对气压梯度向右偏转 90°。
 
 == 4.4 单元测试
@@ -184,13 +184,13 @@ DONE
 仓库配置了 4 个 GitHub Actions 工作流，推送后约 2–3 分钟即可看到结果：
 
 #table(
-  columns: (auto, auto, 1fr),
+  columns: (auto, auto, 1fr, auto),
   align: left,
-  table.header([工作流], [运行环境], [内容]),
-  [`R-CMD-check`], [windows-latest], [完整 `R CMD check`],
-  [`R-CMD-check`], [ubuntu-latest], [完整 `R CMD check`],
-  [`test-coverage`], [ubuntu-latest], [covr 覆盖率，上传 Codecov],
-  [`pkgdown`], [ubuntu-latest], [构建并部署包文档网站],
+  table.header([工作流], [运行环境], [内容], [结果]),
+  [`R-CMD-check`], [windows-latest], [完整 `R CMD check`], [通过],
+  [`R-CMD-check`], [ubuntu-latest], [完整 `R CMD check`], [通过],
+  [`test-coverage`], [ubuntu-latest], [covr 覆盖率，上传 Codecov], [通过],
+  [`pkgdown`], [ubuntu-latest], [构建并部署包文档网站], [依赖编译中],
 )
 
 = 5 操作步骤
@@ -199,8 +199,8 @@ DONE
 
 1. R 4.6.2 已安装，但当前终端会话的 `PATH` 尚未刷新，`Rscript` 不可直接调用；
    用绝对路径 `C:\Program Files\R\R-4.6.2\bin\Rscript.exe` 完成全部命令。
-2. 本机已有 roxygen2、knitr、magrittr，缺少 testthat 与 pkgload；
-   改用清华镜像 `https://mirrors.tuna.tsinghua.edu.cn/CRAN` 安装（官方源经代理约 30 s，镜像约 1 s）。
+2. 本机已有 roxygen2、knitr、magrittr，缺少 testthat 与 pkgload；改用清华 TUNA 镜像安装
+   （官方源经代理下载需 27–44 s，镜像约 1 s）。
 3. Typst 未安装：下载 `typst-x86_64-pc-windows-msvc.zip`（0.15.1），
    解压到 `D:\tools\typst`，并把该目录加入用户 `PATH`。
 4. 模板依赖的字体 Times New Roman、Consolas、KaiTi、SimSun 均已安装，中文排版正常。
@@ -216,25 +216,32 @@ DONE
 1. 把 RHtests 的 `Component.R` 放入 `R/`：`RemoveSeasonal()`、`LS_OneBreak()`、
    `LS_MultiBreaks()` 与内部求解器 `lm_solve()`。
 2. 新增 `R/geostrophic.R`，实现本文推导的 4 个函数。
-3. 为每个函数补写 roxygen2 注释（`@param`、`@return`、`@examples`），
-   中文帮助文档需加 `@encoding UTF-8`，否则 `checkRd()` 会报
-   “Non-ASCII contents without declared encoding”。
+3. 为每个函数补写 roxygen2 注释（`@param`、`@return`、`@examples`）；中文帮助文档需加
+   `@encoding UTF-8`，否则 `checkRd()` 会报编码错误。
 4. 执行 `roxygen2::roxygenise()` 自动生成 `man/` 与 `NAMESPACE`。
 
 == 5.4 编写测试
 
 在 `tests/testthat/` 下新建测试文件，用 `testthat::test_local()` 运行：
 正常值校验解析解、边界条件（断点位置、$f = 0$）、错误输入（长度不一致）与向量化。
+测试不比对硬编码的数字，而是校验物理关系：把地转风代回平衡方程、检验风与气压梯度正交、
+南北半球符号相反；分段回归则用构造的解析解与 `lm()` 的结果作对照。
 
 == 5.5 推送与查看结果
 
-```
-git add -A
-git commit -m "feat: 地转风函数、文档与测试"
-git push origin master
-```
+#block(breakable: false)[
+  ```
+  git add -A
+  git commit -m "feat: 地转风函数、文档与测试"
+  git push origin master
+  ```
+]
 
-推送后在仓库的 Actions 页面等待 2–3 分钟，即可看到 4 个工作流的运行结果。
+推送后 2–3 分钟即可在 Actions 页面看到结果。2026-11-19 22:53 的推送中，
+`R-CMD-check` 用时 1.9 分钟（windows-latest 与 ubuntu-latest 均通过）、
+`test-coverage` 用时 2.2 分钟并通过；`pkgdown` 需现场编译 ragg、textshaping 等依赖，
+耗时明显更长。运行记录见
+#link("https://github.com/kavel-2026/hydromet/actions")[仓库的 Actions 页面]。
 
 = 6 存在的问题与处理
 
@@ -251,15 +258,28 @@ git push origin master
 + *Typst 未安装*：`typst` 命令不存在，模板 `@local/modern-cug-report:0.1.3` 无法编译。
   处理：下载官方 0.15.1 二进制，解压后加入 PATH。
 
++ *DESCRIPTION 被判为 Malformed*：Description 原以中文句号“。”结尾，R 不认为这是完整句子，
+  `R CMD check` 报 “should contain one or more complete sentences”。
+  处理：Description 改为英文整句。
+
++ *R CMD check 停在 checking package dependencies*：日志显示访问 bioconductor.org 的索引
+  超时，前后约 10 分钟，看起来像卡死。处理：等待超时后检查继续；CI 网络正常，不受影响。
+
 + *克隆了老师的仓库*：`origin` 为 `kongdd/hello.R`，直接推送会 403。
   处理：新建自己的仓库并切换到 `hydromet` 包名。
+
++ *Git 直连 GitHub 超时*：`git push` 报 “Failed to connect to github.com:443 after 21068 ms”。
+  本机需经系统代理 127.0.0.1:7897 才能访问。处理：`git -c http.proxy=... push`。
+
++ *没有 GitHub 凭据*：未安装 gh，Git Credential Manager 也没有缓存，推送时无法认证。
+  处理：`git-credential-manager github login` 完成浏览器授权，再新建仓库并推送。
 
 + *中文 Rd 缺少编码声明*：`tools::checkRd()` 报大量
   “Non-ASCII contents without declared encoding”。
   处理：每个 roxygen 块加 `@encoding UTF-8`。
 
-+ *覆盖率工作流注定失败*：模板的 `test-coverage.yaml` 用 `secrets.CODECOV_TOKEN` 上传，
-  学生仓库没有该 secret，推送时 `fail_ci_if_error` 为真会让工作流变红。
++ *覆盖率工作流会变红*：模板的 `test-coverage.yaml` 用 `secrets.CODECOV_TOKEN` 上传，
+  学生仓库没有该 secret，推送时 `fail_ci_if_error` 为真会让工作流失败。
   处理：改为 `fail_ci_if_error: false`。
 
 + *pkgdown 部署缺少写权限*：GitHub 默认令牌只读，部署 `gh-pages` 会 403。
